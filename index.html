@@ -351,23 +351,28 @@
                 }
             }
 
-            function processCSV(path){
-                d3.csv(path, function(d){
-                    let dataseries = []
-                    for (let i = 1961; i < 2019; i++){
-                        dataseries.append([i.toString()],parseInt([i.toString()]));
-                    }
-                    return{
-                        name: d["Country Name"],
-                        code: d["Country Code"],
-                        dseries: dataseries
-                    };
-                }, function(data){
-                        console.log(data[0]);
-                });
+            
+            function processCSV(path){ // Function to load in a csv
+                d3.csv(path,processRow,getData); // Uses d3.csv to access the file
             }
 
-            processCSV("popdat.csv");
+            function processRow(d){ // Function to process each row
+                    let dataseries = [] // Array to store dataseries
+                    for (let i = 1961; i < 2019; i++){ // Iterate over every year in the dataset
+                        dataseries.push([i.toString(),parseInt(d[i])]); // Add a two-element array containing the year and the stat
+                    }
+                    return{
+                        name: d["Country Name"], // Returns the country name,
+                        code: d["Country Code"], // The country code
+                        dseries: dataseries // And the data set
+                    };
+            }
+
+            function getData(data){
+                console.log(data); // Logs the result
+            }
+
+            processCSV("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7F537S657Q2H5JHHL257DHWK");
 
         </script>
 </body>
