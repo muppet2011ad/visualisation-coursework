@@ -316,6 +316,41 @@
                         .attr('r', d => d.r);
             }
         </script>
+
+        <script>
+            class Visualisation{
+                constructor(data){
+                    this.svg = d3.select("svg");
+                    this.width = document.body.clientWidth;
+                    this.height = +svg.attr('height');
+                    this.centerX = width * 0.5;
+                    this.centerY = height * 0.5;
+                    this.strength = 0.05;
+                    this.focusedNode;
+
+                    this.format = d3.format(",d");
+
+                    this.scaleColor = d3.scaleOrdinal(d3.schemeCategory20);
+                
+                    this.startVis();
+                }
+
+                startVis(){
+                    this.pack = d3.pack().size([width,height]).padding(1.5);
+                    this.forceCollide = d3.forceCollide(d => d.r + 1);
+                    this.simulation = d3.forceSimulation().force('charge', d3.forceManyBody()).force('collide', forceCollide).force('x', d3.forceX(centerX ).strength(strength)).force('y', d3.forceY(centerY ).strength(strength));
+                    // reduce number of circles on mobile screen due to slow computation
+		            if ('matchMedia' in window && window.matchMedia('(max-device-width: 767px)').matches) {
+			            data = data.filter(el => {
+				        return el.value >= 50;
+                        });
+                    }
+                    this.nodes = pack(root).leaves().map(node => {
+                        // FINISH - WORKING ON CSV PROCESSING NOW
+                    })
+                }
+            }
+        </script>
 </body>
 
 </html>
