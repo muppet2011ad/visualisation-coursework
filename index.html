@@ -347,9 +347,28 @@
                     }
                     this.nodes = pack(root).leaves().map(node => {
                         // FINISH - WORKING ON CSV PROCESSING NOW
-                    })
+                    });
                 }
             }
+
+            function processCSV(path){
+                d3.csv(path, function(d){
+                    let dataseries = []
+                    for (let i = 1961; i < 2019; i++){
+                        dataseries.append([i.toString()],parseInt([i.toString()]));
+                    }
+                    return{
+                        name: d["Country Name"],
+                        code: d["Country Code"],
+                        dseries: dataseries
+                    };
+                }, function(data){
+                        console.log(data[0]);
+                });
+            }
+
+            processCSV("popdat.csv");
+
         </script>
 </body>
 
