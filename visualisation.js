@@ -1,8 +1,6 @@
 // Based loosely from this D3 bubble graph https://bl.ocks.org/mbostock/4063269
 // And this Forced directed diagram https://bl.ocks.org/mbostock/4062045
 
-import {*} from d3;
-
 let data = [{
     cat: 'library', name: 'D3', value: 30,
     icon: 'img/d3.svg',
