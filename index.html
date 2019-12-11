@@ -67,13 +67,20 @@
                         });
                     }
 
-                    this.root = d3.hierarchy({ children: dat }).sum(d => console.log(d));
+                    this.root = d3.hierarchy({ children: dat }).sum(function(d){
+                        if (d.dseries == undefined){
+                            return 0;
+                        }
+                        else{
+                            return d.dseries[0][1];
+                        }
+                    });
 
                     this.nodes = this.pack(this.root).leaves().map(node => {
                         const data = node.data;
                         //console.log(data);
                         //console.log(data.dseries[0][1]);
-                        console.log(node.r);
+                        //console.log(node.r);
                         return{
                             x: this.centerX + (node.x - this.centerX) * 3, // magnify start position to have transition to center movement
 				            y: this.centerY + (node.y - this.centerY) * 3,
