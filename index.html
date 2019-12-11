@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
     <title>World Population 1961-2018</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="d3.js"></script>
-	<script src="d3leg.js"></script>
+    <script src="d3leg.js"></script>
+    <meta charset="utf-8">
 </head>
 
 <body>
@@ -32,8 +33,7 @@
 
         <script>
             class Visualisation{
-                constructor(data){
-                    this.data = data;
+                constructor(pathtocsv){
                     this.svg = d3.select("svg");
                     this.width = document.body.clientWidth;
                     this.height = +this.svg.attr('height');
@@ -46,10 +46,17 @@
 
                     this.scaleColor = d3.scaleOrdinal(d3.schemeCategory20);
                 
-                    this.startVis();
+
+                    let self = this;
+                    d3.csv(pathtocsv,this.processRow,function(data){
+                        self.startVis(data);
+                    });
+
+                    //this.startVis();
                 }
 
-                startVis(){
+                startVis(dat){
+                    console.log(dat);
                     this.pack = d3.pack().size([this.width,this.height]).padding(1.5);
                     this.forceCollide = d3.forceCollide(d => d.r + 1);
                     this.simulation = d3.forceSimulation().force('charge', d3.forceManyBody()).force('collide', this.forceCollide).force('x', d3.forceX(this.centerX ).strength(this.strength)).force('y', d3.forceY(this.centerY ).strength(this.strength));
@@ -60,7 +67,7 @@
                         });
                     }
 
-                    this.root = d3.hierarchy({ children: this.data }).sum(d => d.value);
+                    this.root = d3.hierarchy({ children: dat }).sum(d => d.value);
 
                     this.nodes = this.pack(this.root).leaves().map(node => {
                         const data = node.data;
@@ -120,8 +127,6 @@
                     //this.node.append("title")
                     //    .text(d => (d.cat + "::" + d.name + "\n" + format(d.value)));
 
-                    this.test();
-
                     this.simulation.nodes(this.nodes).on("tick",function(){
                         this.node = d3.select("svg").selectAll('.node').attr("transform", d => `translate(${d.x},${d.y})`).select("circle").attr("r", d => d.r);
                     });
@@ -137,6 +142,18 @@
                         .select("circle")
                             .attr("r", d => d.r);
                 }
+
+                processRow(d){ // Function to process each row
+                    let dataseries = [] // Array to store dataseries
+                    for (let i = 1961; i < 2019; i++){ // Iterate over every year in the dataset
+                        dataseries.push([i.toString(),parseInt(d[i])]); // Add a two-element array containing the year and the stat
+                    }
+                    return{
+                        name: d["Country Name"], // Returns the country name,
+                        code: d["Country Code"], // The country code
+                        dseries: dataseries // And the data set
+                }
+            }
             }
 
             
@@ -162,7 +179,7 @@
 
             //processCSV("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7F537S657Q2H5JHHL257DHWK");
 
-            let vis = new Visualisation(data);
+            let vis = new Visualisation("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7F537S657Q2H5JHHL257DHWK");
 
         </script>
 </body>
