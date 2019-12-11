@@ -47,7 +47,7 @@
                     this.scaleColor = d3.scaleOrdinal(d3.schemeCategory20);
                 
 
-                    let self = this;
+                    let self = this; // This is a weird hack to let us call the d3 function from inside the class
                     d3.csv(pathtocsv,this.processRow,function(data){
                         self.startVis(data);
                     });
@@ -71,17 +71,18 @@
 
                     this.nodes = this.pack(this.root).leaves().map(node => {
                         const data = node.data;
+                        //console.log(data);
+                        console.log(data.dseries[0][1]);
                         return{
                             x: this.centerX + (node.x - this.centerX) * 3, // magnify start position to have transition to center movement
 				            y: this.centerY + (node.y - this.centerY) * 3,
 				            r: 0, // for tweening
 				            radius: node.r, //original radius
-				            id: data.cat + '.' + (data.name.replace(/\s/g, '-')),
-				            cat: data.cat,
+				            id: data.code,
 				            name: data.name,
-				            value: data.value,
-				            icon: data.icon,
-				            desc: data.desc,
+				            value: data.dseries[0][1],
+				            //icon: data.icon,
+				            //desc: data.desc,
                         }
                     });
 
@@ -146,7 +147,11 @@
                 processRow(d){ // Function to process each row
                     let dataseries = [] // Array to store dataseries
                     for (let i = 1961; i < 2019; i++){ // Iterate over every year in the dataset
-                        dataseries.push([i.toString(),parseInt(d[i])]); // Add a two-element array containing the year and the stat
+                        let result = parseInt(d[i]);
+                        if (!result){
+                            result = 0;
+                        }
+                        dataseries.push([i.toString(),result]); // Add a two-element array containing the year and the stat
                     }
                     return{
                         name: d["Country Name"], // Returns the country name,
