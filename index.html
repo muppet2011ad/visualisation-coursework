@@ -86,6 +86,8 @@
                         }
                     });
 
+                    let self = this;
+
                     this.svg.style("background-color","#eee");
                     this.node = this.svg.selectAll('.node')
                         .data(this.nodes)
@@ -93,7 +95,7 @@
 			            .attr('class', 'node')
 			            .call(d3.drag()
 				            .on('start', (d) => {
-					        if (!d3.event.active) this.simulation.alphaTarget(0.2).restart();
+					        if (!d3.event.active) self.simulation.alphaTarget(0.2).restart();
 					        d.fx = d.x;
 					        d.fy = d.y;
 				        })
@@ -102,7 +104,7 @@
 					        d.fy = d3.event.y;
 				        })
 				        .on('end', (d) => {
-					        if (!d3.event.active) this.simulation.alphaTarget(0);
+					        if (!d3.event.active) self.simulation.alphaTarget(0);
 					        d.fx = null;
 					        d.fy = null;
 				        }));
@@ -116,7 +118,7 @@
 					        let i = d3.interpolateNumber(0, d.radius);
 					        return (t) => {
 						        d.r = i(t);
-						        this.simulation.force('collide', this.forceCollide);
+						        self.simulation.force('collide', self.forceCollide);
                             }
                             });
 
