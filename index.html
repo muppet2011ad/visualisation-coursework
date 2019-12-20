@@ -85,7 +85,7 @@
                             x: this.centerX + (node.x - this.centerX) * 3, // magnify start position to have transition to center movement
 				            y: this.centerY + (node.y - this.centerY) * 3,
 				            r: 0, // for tweening
-				            radius: node.r, //original radius
+				            radius: Math.sqrt(data.dseries[0][1])*0.0015, //original radius
 				            id: data.code,
 				            name: data.name,
 				            value: data.dseries[0][1],
@@ -168,7 +168,7 @@
                 }
 
                 processRow(d){ // Function to process each row
-                    let dataseries = [] // Array to store dataseries
+                    let dataseries = []; // Array to store dataseries
                     for (let i = 1961; i < 2019; i++){ // Iterate over every year in the dataset
                         let result = parseInt(d[i]);
                         if (!result){
@@ -207,7 +207,7 @@
 
             //processCSV("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7F537S657Q2H5JHHL257DHWK");
 
-            let vis = new Visualisation("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7F537S657Q2H5JHHL257DHWK");
+            let vis = new Visualisation("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7AADO6NCNMXCKZXQAC6AY3SU");
 
         </script>
 </body>
