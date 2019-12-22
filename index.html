@@ -19,16 +19,8 @@
     <script>
             // Based loosely from this D3 bubble graph https://bl.ocks.org/mbostock/4063269
             // And this Forced directed diagram https://bl.ocks.org/mbostock/4062045
-            let data = [{
-                cat: 'library', name: 'D3', value: 30,
-                icon: 'img/d3.svg',
-                desc: `
-                    D3.js (or just D3 for Data-Driven Documents) is a JavaScript library for
-                    producing dynamic, interactive data visualizations in web browsers.
-                    It makes use of the widely implemented SVG, HTML5, and CSS standards.<br>
-                    This infographic you are viewing is made with D3.
-                `
-            }];
+            
+
         </script>
 
         <script>
@@ -39,13 +31,16 @@
                     this.height = +this.svg.attr('height');
                     this.centerX = this.width * 0.5;
                     this.centerY = this.height * 0.5;
-                    this.strength = 0.05;
+                    this.strength = 0.20;
                     this.focusedNode;
 
                     this.format = d3.format(",d");
 
                     this.scaleColor = d3.scaleOrdinal(d3.schemeCategory20);
                 
+                    this.excludes = ["ARB","CEB","CSS","EAP","EAR","EAS","ECA","ECS","EMU","EUU","FCS","HIC","HPC","IBD","IBT","IDA","IDB","IDX","INX","LAC","LCN","LDC","LIC","LMC","LMY","LTE","MEA","MIC","MNA","NAC","OED","OSS","PRE","PSS","PST","SSA","SSF","SST","TEA","TEC","TLA","TMN","TSA","TSS","UMC","WLD","SAS"]
+                    // This list contains all of the iso-3 country codes appearing in world bank datasets that aren't actually countries (but are instead groups of countries)
+
 
                     let self = this; // This is a weird hack to let us call the d3 function from inside the class
                     d3.csv(pathtocsv,this.processRow,function(data){
@@ -62,10 +57,14 @@
                     this.simulation = d3.forceSimulation().force('charge', d3.forceManyBody()).force('collide', this.forceCollide).force('x', d3.forceX(this.centerX ).strength(this.strength)).force('y', d3.forceY(this.centerY ).strength(this.strength));
                     // reduce number of circles on mobile screen due to slow computation
 		            if ('matchMedia' in window && window.matchMedia('(max-device-width: 767px)').matches) {
-			            data = data.filter(el => {
-				        return el.value >= 50;
+			            dat = dat.filter(el => {
+				        return el.value >= 500000;
                         });
                     }
+
+                    dat = dat.filter(el => {
+                        return !(this.excludes.includes(el.code));
+                    })
 
                     this.root = d3.hierarchy({ children: dat }).sum(function(d){
                         if (d.dseries == undefined){
@@ -85,7 +84,7 @@
                             x: this.centerX + (node.x - this.centerX) * 3, // magnify start position to have transition to center movement
 				            y: this.centerY + (node.y - this.centerY) * 3,
 				            r: 0, // for tweening
-				            radius: Math.sqrt(data.dseries[0][1])*0.0015, //original radius
+				            radius: Math.sqrt(data.dseries[0][1])*0.0050, //original radius
 				            id: data.code,
 				            name: data.name,
 				            value: data.dseries[0][1],
@@ -142,7 +141,7 @@
                         this.node = d3.select("svg").selectAll('.node').attr("transform", d => `translate(${d.x},${d.y})`).select("circle").attr("r", d => d.r);
                     });
 
-                    let infoBox = this.node.append('foreignObject')
+                    /*let infoBox = this.node.append('foreignObject')
 			            .classed('circle-overlay', true)
 			            .attr('x', -350 * 0.5 * 0.8)
 			            .attr('y', -0 * 0.5 * 0.8)
@@ -153,7 +152,7 @@
 
 		            infoBox.append('h2')
 			            .classed('circle-overlay__title', true)
-			            .text(d => d.name);
+			            .text(d => d.name);*/
                 }
 
                 test(){
