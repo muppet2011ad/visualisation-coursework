@@ -54,7 +54,11 @@
                 }
 
                 startVis(dat){
+                    dat = dat.filter(el => {
+                        return !(this.excludes.includes(el.code));
+                    })
                     console.log(dat);
+                    this.data = dat; // So we can use the data in other functions
                     this.pack = d3.pack().size([this.width,this.height]).padding(1.5);
                     this.forceCollide = d3.forceCollide(d => d.r + 1);
                     this.simulation = d3.forceSimulation().force('charge', d3.forceManyBody()).force('collide', this.forceCollide).force('x', d3.forceX(this.centerX ).strength(this.strength)).force('y', d3.forceY(this.centerY ).strength(this.strength));
@@ -64,10 +68,6 @@
 				        return el.dseries[0][1] >= 500000;
                         });
                     }
-
-                    dat = dat.filter(el => {
-                        return !(this.excludes.includes(el.code));
-                    })
 
                     this.root = d3.hierarchy({ children: dat }).sum(function(d){
                         if (d.dseries == undefined){
@@ -179,11 +179,23 @@
 
                     this.slider = slidercon.append("input")
                         .attr("type","range")
-                        .attr("min",this.syear)
-                        .attr("max",this.eyear)
-                        .attr("value",this.syear)
+                        .attr("min","1960")
+                        .attr("max","2018")
+                        .attr("value","1960")
                         .classed("slider",true)
                         .attr("id","slide")
+
+                    this.slider.on("input",function(){
+                        self.updateVis(+this.value)
+                    });
+                }
+
+                updateVis(year){
+                    this.node.data(this.data).attr("r", (d) => {
+                        let index = year - this.syear
+                        return Math.sqrt(d.dseries[index][1])*0.0050
+                    });
+                    this.forceCollide = d3.forceCollide(d => d.r + 1);
                 }
 
                 test(){
