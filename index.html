@@ -149,31 +149,9 @@
 			            .attr('height', d => d.radius * 2 * 0.7)
 			            .attr('width', d => d.radius * 2 * 0.7)
 
-                    //this.node.append("clipPath")
-                    //    .attr("id", d => `clip-"${d.id}`)
-                    //    .attr("use")
-                    //    .attr("xlink:href", d => `#${d.id}`);
-                    
-                    //this.node.append("title")
-                    //    .text(d => (d.cat + "::" + d.name + "\n" + format(d.value)));
-
                     this.simulation.nodes(this.nodes).on("tick",function(){
                         this.node = d3.select("svg").selectAll('.node').attr("transform", d => `translate(${d.x},${d.y})`).select("circle").attr("r", d => d.r);
                     });
-
-
-                    /*let infoBox = this.node.append('foreignObject')
-			            .classed('circle-overlay', true)
-			            .attr('x', -350 * 0.5 * 0.8)
-			            .attr('y', -0 * 0.5 * 0.8)
-			            .attr('height', 350 * 0.8)
-			            .attr('width', 350 * 0.8)
-				        .append('xhtml:div')
-				        .classed('circle-overlay__inner', true);
-
-		            infoBox.append('h2')
-			            .classed('circle-overlay__title', true)
-                        .text(d => d.name);*/
                         
                     let slidercon = d3.select("#vis").append("div")
                         .classed("slidecontainer",true);
