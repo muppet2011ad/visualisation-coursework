@@ -27,7 +27,7 @@
 
         <script>
             class Visualisation{
-                constructor(pathtocsv, syear, eyear){
+                constructor(pathtocsv, syear, eyear, lowlegtag, highlegtag){
                     this.svg = d3.select("svg");
                     this.width = document.body.clientWidth;
                     this.height = +this.svg.attr('height');
@@ -36,6 +36,8 @@
                     this.strength = 0.20;
                     this.syear = syear;
                     this.eyear = eyear;
+                    this.lowtag = lowlegtag;
+                    this.hightag = highlegtag;
 
                     this.format = d3.format(",d");
 
@@ -169,6 +171,36 @@
                     });
 
                     this.yeartext = d3.select("#vis").append("h2").text(this.syear);
+
+                    let scaleColor = d3.scaleOrdinal(d3.schemeCategory20)
+
+                    let legendOrdinal = d3.legendColor()
+			            .scale(scaleColor)
+			            .shape('circle');
+
+		            let legend = this.svg.append('g')
+                        .classed('legend-color', true)
+                        .attr('text-anchor', 'start')
+                        .attr('transform','translate(20,30)')
+                        .style('font-size','12px')
+                        .call(legendOrdinal);
+
+                    let sizeScale = d3.scaleOrdinal()
+                        .domain([this.lowtag, this.hightag])
+                        .range([5, 10] );
+
+                    let legendSize = d3.legendSize()
+                        .scale(sizeScale)
+                        .shape('circle')
+                        .shapePadding(10)
+                        .labelAlign('end');
+
+                    let legend2 = this.svg.append('g')
+                        .classed('legend-size', true)
+                        .attr('text-anchor', 'start')
+                        .attr('transform', 'translate(150, 25)')
+                        .style('font-size', '12px')
+                        .call(legendSize);
                 }
 
                 updateVis(year){
@@ -239,7 +271,7 @@
 
             //processCSV("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7F537S657Q2H5JHHL257DHWK");
 
-            let vis = new Visualisation("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7AADO6NCNMXCKZXQAC6AY3SU",1960,2017);
+            let vis = new Visualisation("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7AADO6NCNMXCKZXQAC6AY3SU",1960,2017, "lower population","greater population");
 
         </script>
 </body>
