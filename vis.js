@@ -43,7 +43,7 @@ class Visualisation {
         }
 
         this.root = d3.hierarchy({ children: dat }).sum(function (d) {
-            if (d.dseries == undefined) {
+            if (d.dseries === undefined) {
                 return 0;
             } else {
                 return d.dseries.slice(-1)[1];
@@ -148,7 +148,7 @@ class Visualisation {
             .scale(scaleColor)
             .shape('circle');
 
-        const legend = this.svg.append('g')
+        this.svg.append('g')
             .classed('legend-color', true)
             .attr('text-anchor', 'start')
             .attr('transform', 'translate(20,30)')
@@ -165,7 +165,7 @@ class Visualisation {
             .shapePadding(10)
             .labelAlign('end');
 
-        const legend2 = this.svg.append('g')
+        this.svg.append('g')
             .classed('legend-size', true)
             .attr('text-anchor', 'start')
             .attr('transform', 'translate(150, 25)')
