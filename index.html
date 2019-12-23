@@ -74,7 +74,7 @@
                             return 0;
                         }
                         else{
-                            return d.dseries[0][1];
+                            return d.dseries.slice(-1)[1];
                         }
                     });
 
@@ -90,7 +90,7 @@
 				            radius: Math.sqrt(data.dseries[0][1])*0.0050, //original radius
 				            id: data.code,
 				            name: data.name,
-				            value: data.dseries[0][1],
+				            value: data.dseries,
 				            //icon: data.icon,
 				            //desc: data.desc,
                         }
@@ -108,6 +108,7 @@
 					        if (!d3.event.active) self.simulation.alphaTarget(0.2).restart();
 					        d.fx = d.x;
 					        d.fy = d.y;
+                            console.log(d.x,d.y);
 				        })
 				        .on('drag', (d) => {
 					        d.fx = d3.event.x;
@@ -180,7 +181,7 @@
                     this.slider = slidercon.append("input")
                         .attr("type","range")
                         .attr("min","1960")
-                        .attr("max","2018")
+                        .attr("max","2017")
                         .attr("value","1960")
                         .classed("slider",true)
                         .attr("id","slide")
@@ -191,11 +192,19 @@
                 }
 
                 updateVis(year){
-                    this.node.data(this.data).attr("r", (d) => {
-                        let index = year - this.syear
-                        return Math.sqrt(d.dseries[index][1])*0.0050
-                    });
-                    this.forceCollide = d3.forceCollide(d => d.r + 1);
+                    this.simulation.alpha(0.2).restart();
+                    let index = year - this.syear
+                    console.log(index);
+                    this.node.selectAll("circle").transition().duration(2000).ease(d3.easeElasticOut)
+                        .tween("attr.r", (d) => {
+                            let newr = Math.sqrt(d.value[index][1])*0.0050
+                            let ir = d3.interpolateNumber(d.r,newr);
+                            return (t) => {
+                                d.r = ir(t);
+                                this.simulation.force('collide', this.forceCollide);
+                            };
+                        });
+                    this.simulation.alphaTarget(0);
                 }
 
                 test(){
