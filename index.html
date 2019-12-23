@@ -19,7 +19,10 @@
     <script src="vis.js"></script>
 
     <script>
-        let vis = new Visualisation("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7AADO6NCNMXCKZXQAC6AY3SU",1960,2017, "lower population","greater population");
+        let vis = new Visualisation();
+        vis.setYearRange(1960,2017);
+        vis.setLegendTags("lower population","greater population");
+        vis.startVisFromCSV("https://raw.githubusercontent.com/muppet2011ad/visualisation-coursework/master/popdat.csv?token=AEU4F7AADO6NCNMXCKZXQAC6AY3SU");
     </script>
 </body>
 
