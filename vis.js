@@ -4,15 +4,16 @@ class Visualisation {
     /**
      * Create the visualisation - this sets up some of the basic svg and d3 stuff - before you can enjoy the visualisation, you must call [setYearRange()]{@link Visualisation#setYearRange} and ideally [setLegendTags()]{@link Visualisation#setLegendTags}. After that you can call [startVisFromCSV()]{@link Visualisation#startVisFromCSV} if you have a csv, or [startVis()]{@link Visualisation#startVis} if you already have an object.
      * @param {String} id - This is the id of a div element in the body of the html using this class. The div must also contain an svg, the size of which determines the size of the visualisation. By default, the constructor uses 'vis', but if this id is already in use on the page, you can use the parameter to specify another.
+     * @param {Number} strength - This is the strength of the attractive force between nodes in the visualisation. 0.2 seems to work best when visualising all world countries.
      */
-    constructor (id = 'vis') {
+    constructor (id = 'vis', strength = 0.2) {
         this.id = id;
         this.svg = d3.select('#' + id).select('svg'); // Select svg
         this.width = document.body.clientWidth; // Get the width from the width of the browser
         this.height = +this.svg.attr('height'); // Height comes from the height of the svg as defined by the html
         this.centerX = this.width * 0.5;
         this.centerY = this.height * 0.5; // Calculates the centre x and y co-ords
-        this.strength = 0.20; // Determines the attraction between nodes
+        this.strength = strength; // Determines the attraction between nodes
 
         this.format = d3.format(',d');
 
