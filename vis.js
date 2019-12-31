@@ -238,6 +238,14 @@ class Visualisation {
                     this.simulation.force('collide', this.forceCollide); // Update the force
                 };
             });
+        this.node._groups[0].forEach((k) => { // Iterates over each node manually (we have to do this because d3 doesn't let me access the images otherwise)
+            const img = d3.select(k.lastChild); // Select the image (which is the last child since it is the last thing we add to the node)
+            const r = Math.sqrt(k.__data__.value[index]) * 0.0050; // Calculate the radius of the circle (since the transition is still happening, anything we get from the circle might not be accurate)
+            img.attr('height', r * 2 * 0.7);
+            img.attr('width', r * 2 * 0.7);
+            img.attr('x', -r * 0.7);
+            img.attr('y', -r * 0.7); // Adjust all attributes - it's a shame this isn't a transition but there's not much I can do about it
+        });
         this.simulation.alphaTarget(0); // Target the simulation towards 0 alpha (i.e. everything calms down to stationary)
     }
 
