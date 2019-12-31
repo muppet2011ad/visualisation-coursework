@@ -24,11 +24,13 @@ class Visualisation {
 
     /**
      * This method takes a path to a csv and uses d3 to access the csv. From there, it hands off to [startVis()]{@link Visualisation#startVis} to begin the visualisation.
-     * @param {String} path - The file (or url) path to the csv dataset. Bear in mind that browsers will block CORS requests so specifying a local file may fail. The csv itself should be a table with countries as rows. Each row should have a value for "Country Code", "Country Name" and one for each of the years set by [setYearRange()]{@link Visualisation.setYearRange}.
+     * @param {String} path - The file (or url) path to the csv datasets. Bear in mind that browsers will block CORS requests so specifying a local file may fail. The csv itself should be a table with countries as rows. Each row should have a value for "Country Code", "Country Name" and one for each of the years set by [setYearRange()]{@link Visualisation.setYearRange}.
      */
     startVisFromCSV (path) {
         const self = this; // This is a weird hack to let us call the d3 function from inside the class
-        d3.csv(path, this.processRow, function (data) { // Loads the csv based on the location given, processes each row, then starts the visualisation
+        d3.csv(path, (d) => { // Declares function to call in the same scope on csv
+            return this.processRow(d); // Call this class' processRow() function
+        }, function (data) { // Loads the csv based on the location given, processes each row, then starts the visualisation
             self.startVis(data);
         });
     }
@@ -97,7 +99,7 @@ class Visualisation {
         // reduce number of circles on mobile screen due to slow computation
         if ('matchMedia' in window && window.matchMedia('(max-device-width: 767px)').matches) {
             dat = dat.filter(el => {
-            return el.dseries[0][1] >= 500000;
+            return el.dseries[0] >= 500000;
             });
         }
 
@@ -105,7 +107,7 @@ class Visualisation {
             if (d.dseries === undefined) {
                 return 0;
             } else {
-                return d.dseries.slice(-1)[1];
+                return d.dseries.slice(-1);
             }
         });
 
@@ -246,12 +248,12 @@ class Visualisation {
      */
     processRow (d) { // Function to process each row
         const dataseries = []; // Array to store dataseries
-        for (let i = 1961; i < 2019; i++) { // Iterate over every year in the dataset
+        for (let i = this.syear; i <= this.eyear; i++) { // Iterate over every year in the dataset
             let result = parseInt(d[i]);
             if (!result) {
                 result = 0;
             }
-            dataseries.push(result); // Add a two-element array containing the year and the stat
+            dataseries.push(result); // Add the data for the year into the array
         }
         return {
             name: d['Country Name'], // Returns the country name,
