@@ -1,4 +1,7 @@
-/** Class for a force bubble visualisation of a dataset */
+/** Class for a force bubble visualisation of a dataset
+ * To use this class, your page must contain a div element (of any id, though the class defaults to "vis") and the div element must contain an svg element (the size of which affects the final visualisation).
+ * You must also have included d3.js (v4) using a script tag earlier in the html page otherwise it will be undefined here.
+*/
 
 class Visualisation {
     /**
