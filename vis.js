@@ -41,6 +41,7 @@ class Visualisation {
 
     /**
      * Setter method for the year range of the visualisation. This MUST be called before [startVis()]{@link Visualisation#startVis} or [startVisFromCSV()]{@link Visualisation#startVisFromCSV}.
+     * If you provide an invalid date range (i.e. years beyond the dataset), the visualisation will fail to start correctly.
      * @param {Number} start - The first year in the dataset (inclusive).
      * @param {Number} end - The final year in the dataset (exclusive).
      */
