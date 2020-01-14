@@ -51,7 +51,7 @@ class Visualisation {
         this.scaleColor = d3.scaleOrdinal(d3.schemeCategory20); // Defines legend colours
 
         this.excludes = ['ARB', 'CEB', 'CSS', 'EAP', 'EAR', 'EAS', 'ECA', 'ECS', 'EMU', 'EUU', 'FCS', 'HIC', 'HPC', 'IBD', 'IBT', 'IDA', 'IDB', 'IDX', 'INX', 'LAC', 'LCN', 'LDC', 'LIC', 'LMC', 'LMY', 'LTE', 'MEA', 'MIC', 'MNA', 'NAC', 'OED', 'OSS', 'PRE', 'PSS', 'PST', 'SSA', 'SSF', 'SST', 'TEA', 'TEC', 'TLA', 'TMN', 'TSA', 'TSS', 'UMC', 'WLD', 'SAS'];
-        // This list contains all of the iso-3 country codes appearing in world bank datasets that aren't actually countries (but are instead groups of countries)
+        // This list contains all of the iso-3 country codes appearing in world bank datasets that aren't actually countries (but are instead groups of countries). Including these would lead to issues so I have to exclude them.
     }
 
     /**
@@ -80,7 +80,7 @@ class Visualisation {
 
     /**
      * Getter function for the year range of the data set.
-     * @returns {Array} Returns an array, the first element of which is the start year, the second element of which is the last year.
+     * @returns {Array} Returns an array, the first element of which is the start year, the second element of which is the last year. If this is called before [setYearRange()]{@link Visualisation#setYearRange} then it will return the array [undefined,undefined].
      */
     getYearRange () {
         return [this.syear, this.eyear];
@@ -112,13 +112,13 @@ class Visualisation {
      * @param {Array} dat.dseries - The data series for that particular country. Each item in the array should be a Number representing the value at that year.
      */
     startVis (dat) { // Function to initialise the visualisation
-        if (this.syear === undefined || this.eyear === undefined) {
-            console.log('Data range not defined, try calling setYearRange() first.');
-            return;
+        if (this.syear === undefined || this.eyear === undefined) { // If the years haven't been set yet
+            console.log('Data range not defined, try calling setYearRange() first.'); // We can't "guess" what the range would be given the data, so we just have to abort trying to make the visualisation.
+            return; // Exit function
         }
 
-        if (this.lowtag === undefined || this.hightag === undefined) {
-            this.setLegendTags();
+        if (this.lowtag === undefined || this.hightag === undefined) { // If the legend tags haven't yet been set,
+            this.setLegendTags(); // Set them to the default values
         }
 
         dat = dat.filter(el => { // Filter the dataset
@@ -130,9 +130,9 @@ class Visualisation {
         this.simulation = d3.forceSimulation().force('charge', d3.forceManyBody()).force('collide', this.forceCollide).force('x', d3.forceX(this.centerX).strength(this.strength)).force('y', d3.forceY(this.centerY).strength(this.strength));
         // Sets up all of the forces for the d3 force simulation
         // reduce number of circles on mobile screen due to slow computation
-        if ('matchMedia' in window &amp;&amp; window.matchMedia('(max-device-width: 767px)').matches) {
+        if ('matchMedia' in window &amp;&amp; window.matchMedia('(max-device-width: 767px)').matches) { // If the device is mobile
             dat = dat.filter(el => {
-            return el.dseries[0] >= 500000;
+            return el.dseries[0] >= 500000; // Filter out small population countries to reduce the number of circles we need to draw - should help performance and battery life
             });
         }
 
@@ -185,7 +185,7 @@ class Visualisation {
             .attr('id', d => d.id) // Transfer node data
             .attr('r', 0) // Start with 0 radius
             .style('fill', d => this.scaleColor()) // Fill as appropriate
-            .transition().duration(2000).ease(d3.easeElasticOut) // Transition the radius in
+            .transition().duration(2000).ease(d3.easeElasticOut) // Transition the radius in - gives a "bounce" effect
                 .tween('circleIn', function (d) { // Tween function
                 const i = d3.interpolateNumber(0, d.radius); // Interpolate between 0 and the target
                 return (t) => { // On each tick
@@ -198,13 +198,13 @@ class Visualisation {
             .classed('node-icon', true)
             .attr('clip-path', d => `url(#clip-${d.id})`) // Set class and clip path
             .attr('xlink:href', d => { // Set href
-                // This is a dict that maps iso-3 country codes to iso-2 (world bank datasets use iso-3 but good flag downloads I found used iso-2)
+                // This is a dict that maps iso-3 country codes to iso-2 (world bank datasets use iso-3 but good flag downloads I found used iso-2 - any iso-3 downloads were low-res bitmaps instead of beautiful svgs)
                 const mapping = { AFG: 'AF', ALA: 'AX', ALB: 'AL', DZA: 'DZ', ASM: 'AS', AND: 'AD', AGO: 'AO', AIA: 'AI', ATA: 'AQ', ATG: 'AG', ARG: 'AR', ARM: 'AM', ABW: 'AW', AUS: 'AU', AUT: 'AT', AZE: 'AZ', BHS: 'BS', BHR: 'BH', BGD: 'BD', BRB: 'BB', BLR: 'BY', BEL: 'BE', BLZ: 'BZ', BEN: 'BJ', BMU: 'BM', BTN: 'BT', BOL: 'BO', BIH: 'BA', BWA: 'BW', BVT: 'BV', BRA: 'BR', VGB: 'VG', IOT: 'IO', BRN: 'BN', BGR: 'BG', BFA: 'BF', BDI: 'BI', KHM: 'KH', CMR: 'CM', CAN: 'CA', CPV: 'CV', CYM: 'KY', CAF: 'CF', TCD: 'TD', CHL: 'CL', CHN: 'CN', HKG: 'HK', MAC: 'MO', CXR: 'CX', CCK: 'CC', COL: 'CO', COM: 'KM', COG: 'CG', COD: 'CD', COK: 'CK', CRI: 'CR', CIV: 'CI', HRV: 'HR', CUB: 'CU', CYP: 'CY', CZE: 'CZ', DNK: 'DK', DJI: 'DJ', DMA: 'DM', DOM: 'DO', ECU: 'EC', EGY: 'EG', SLV: 'SV', GNQ: 'GQ', ERI: 'ER', EST: 'EE', ETH: 'ET', FLK: 'FK', FRO: 'FO', FJI: 'FJ', FIN: 'FI', FRA: 'FR', GUF: 'GF', PYF: 'PF', ATF: 'TF', GAB: 'GA', GMB: 'GM', GEO: 'GE', DEU: 'DE', GHA: 'GH', GIB: 'GI', GRC: 'GR', GRL: 'GL', GRD: 'GD', GLP: 'GP', GUM: 'GU', GTM: 'GT', GGY: 'GG', GIN: 'GN', GNB: 'GW', GUY: 'GY', HTI: 'HT', HMD: 'HM', VAT: 'VA', HND: 'HN', HUN: 'HU', ISL: 'IS', IND: 'IN', IDN: 'ID', IRN: 'IR', IRQ: 'IQ', IRL: 'IE', IMN: 'IM', ISR: 'IL', ITA: 'IT', JAM: 'JM', JPN: 'JP', JEY: 'JE', JOR: 'JO', KAZ: 'KZ', KEN: 'KE', KIR: 'KI', PRK: 'KP', KOR: 'KR', KWT: 'KW', KGZ: 'KG', LAO: 'LA', LVA: 'LV', LBN: 'LB', LSO: 'LS', LBR: 'LR', LBY: 'LY', LIE: 'LI', LTU: 'LT', LUX: 'LU', MKD: 'MK', MDG: 'MG', MWI: 'MW', MYS: 'MY', MDV: 'MV', MLI: 'ML', MLT: 'MT', MHL: 'MH', MTQ: 'MQ', MRT: 'MR', MUS: 'MU', MYT: 'YT', MEX: 'MX', FSM: 'FM', MDA: 'MD', MCO: 'MC', MNG: 'MN', MNE: 'ME', MSR: 'MS', MAR: 'MA', MOZ: 'MZ', MMR: 'MM', NAM: 'NA', NRU: 'NR', NPL: 'NP', NLD: 'NL', ANT: 'AN', NCL: 'NC', NZL: 'NZ', NIC: 'NI', NER: 'NE', NGA: 'NG', NIU: 'NU', NFK: 'NF', MNP: 'MP', NOR: 'NO', OMN: 'OM', PAK: 'PK', PLW: 'PW', PSE: 'PS', PAN: 'PA', PNG: 'PG', PRY: 'PY', PER: 'PE', PHL: 'PH', PCN: 'PN', POL: 'PL', PRT: 'PT', PRI: 'PR', QAT: 'QA', REU: 'RE', ROU: 'RO', RUS: 'RU', RWA: 'RW', BLM: 'BL', SHN: 'SH', KNA: 'KN', LCA: 'LC', MAF: 'MF', SPM: 'PM', VCT: 'VC', WSM: 'WS', SMR: 'SM', STP: 'ST', SAU: 'SA', SEN: 'SN', SRB: 'RS', SYC: 'SC', SLE: 'SL', SGP: 'SG', SVK: 'SK', SVN: 'SI', SLB: 'SB', SOM: 'SO', ZAF: 'ZA', SGS: 'GS', SSD: 'SS', ESP: 'ES', LKA: 'LK', SDN: 'SD', SUR: 'SR', SJM: 'SJ', SWZ: 'SZ', SWE: 'SE', CHE: 'CH', SYR: 'SY', TWN: 'TW', TJK: 'TJ', TZA: 'TZ', THA: 'TH', TLS: 'TL', TGO: 'TG', TKL: 'TK', TON: 'TO', TTO: 'TT', TUN: 'TN', TUR: 'TR', TKM: 'TM', TCA: 'TC', TUV: 'TV', UGA: 'UG', UKR: 'UA', ARE: 'AE', GBR: 'GB', USA: 'US', UMI: 'UM', URY: 'UY', UZB: 'UZ', VUT: 'VU', VEN: 'VE', VNM: 'VN', VIR: 'VI', WLF: 'WF', ESH: 'EH', YEM: 'YE', ZMB: 'ZM', ZWE: 'ZW', XKX: 'XK' };
                 const code = mapping[d.id]; // Get the two letter code
-                if (code) {
+                if (code) { // If thee code is defined (i.e. country code is valid)
                     return 'img/' + code.toLowerCase() + '.svg'; // Construct the file path of the appropriate flag
                 }
-                return '';
+                return ''; // Otherwise return nothing
             })
             .attr('x', d => -d.radius * 0.7)
             .attr('y', d => -d.radius * 0.7)
@@ -256,8 +256,8 @@ class Visualisation {
      * @param {Number} year - The year to switch to within the dataset. If the year is outside of the range given in the constructor by syear and eyear, the method will immediately return.
      */
     updateVis (year) {
-        if (year > this.eyear || year &lt; this.syear) {
-            return;
+        if (year > this.eyear || year &lt; this.syear) { // If the year is out of range (given the years set), then we can't set it to this, so there's no point trying
+            return; // Exit the function
         }
         this.simulation.alpha(0.2).restart(); // Restart the simulation
         const index = year - this.syear; // Calculate the index of the data series we need to get
@@ -319,7 +319,7 @@ class Visualisation {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Jan 14 2020 11:41:51 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Tue Jan 14 2020 14:50:31 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>
