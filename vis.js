@@ -1,6 +1,6 @@
-/** Class for a force bubble visualisation of a dataset
+/** Class for a force bubble visualisation of a dataset (featuring countries). Countries are drawn as circles with area proportional to the value in a given year and identified by their flags (contained within the /img folder).
  * To use this class, your page must contain a div element (of any id, though the class defaults to "vis") and the div element must contain an svg element (the size of which affects the final visualisation).
- * You must also have included d3.js (v4) using a script tag earlier in the html page otherwise it will be undefined here.
+ * You must also have included d3.js (v4) using a script tag earlier in the html page since this class depends on "d3" being defined.
 */
 
 class Visualisation {
@@ -28,7 +28,7 @@ class Visualisation {
 
     /**
      * This method takes a path to a csv and uses d3 to access the csv. From there, it hands off to [startVis()]{@link Visualisation#startVis} to begin the visualisation.
-     * @param {String} path - The file (or url) path to the csv datasets. Bear in mind that browsers will block CORS requests so specifying a local file may fail. The csv itself should be a table with countries as rows. Each row should have a value for "Country Code", "Country Name" and one for each of the years set by [setYearRange()]{@link Visualisation.setYearRange}.
+     * @param {String} path - The file (or url) path to the csv datasets. Bear in mind that browsers will block CORS requests so specifying a local file may fail. The csv itself should be a table with countries as rows. Each row should have a value for "Country Code", "Country Name" and one for each of the years set by [setYearRange()]{@link Visualisation.setYearRange}. "Country Code" must correspond to an ISO 3166-1 alpha-3 code, and the value for each year should be a number.
      */
     startVisFromCSV (path) {
         const self = this; // This is a weird hack to let us call the d3 function from inside the class
@@ -43,7 +43,7 @@ class Visualisation {
      * Setter method for the year range of the visualisation. This MUST be called before [startVis()]{@link Visualisation#startVis} or [startVisFromCSV()]{@link Visualisation#startVisFromCSV}.
      * If you provide an invalid date range (i.e. years beyond the dataset), the visualisation will fail to start correctly.
      * @param {Number} start - The first year in the dataset (inclusive).
-     * @param {Number} end - The final year in the dataset (exclusive).
+     * @param {Number} end - The final year in the dataset (inclusive).
      */
     setYearRange (start, end) {
         this.syear = start;
@@ -59,7 +59,7 @@ class Visualisation {
     }
 
     /**
-     * Function to set the tags that are used in the legend of the visualisation to show what the size of a circle indicates. This function will only have an observable effect if called before [startVis()]{@link Visualisation#startVis}.
+     * Function to set the tags that are used in the legend of the visualisation to show what the size of a circle indicates. This function will only have an observable effect if called before [startVis()]{@link Visualisation#startVis}. If startVis() is called first, then it will use the default values.
      * @param {String} low - The text to be displayed in the legend indicating a lower quantity (e.g. if your data is on the number of sheep, this may read "fewer sheep").
      * @param {String} high - The text to be displayed in the legend indicating a higher quantity (e.g. if your data is on the number of sheep, this may read "more sheep").
      */
@@ -80,7 +80,7 @@ class Visualisation {
      * Function to set up and begin the visualisation - this can be called directly or through [startVisFromCSV()]{@link Visualisation#startVisFromCSV}. Assuming [setYearRange()]{@link Visualisation#setYearRange} has been called and the data is valid, it will create a force simulation with each data item as a node. The method also creates a slider enabling the user to move between years (it will start at the earliest year in the dataset).
      * @param {Object} dat - The data to be displayed in the visualisation (normally this comes from d3.csv). If you're manually calling this, each item in dat should have a certain set of properties:
      * @param {String} dat.name - The name of the country.
-     * @param {String} dat.code - The ISO 3166-1 alpha-3 country code of the country.
+     * @param {String} dat.code - The ISO 3166-1 alpha-3 country code of the country - if these aren't correct the flags will fail to display.
      * @param {Array} dat.dseries - The data series for that particular country. Each item in the array should be a Number representing the value at that year.
      */
     startVis (dat) { // Function to initialise the visualisation
@@ -224,7 +224,7 @@ class Visualisation {
     }
 
     /**
-     * Method to switch the visualisation to a new year in the dataset. This updates all nodes in the visualisation with the new data and begins a transition effect to the new values.
+     * Method to switch the visualisation to a new year in the dataset. This updates all nodes in the visualisation with the new data and begins a transition effect to the new values. This is called whenever the visualisation's slider is changed.
      * @param {Number} year - The year to switch to within the dataset. If the year is outside of the range given in the constructor by syear and eyear, the method will immediately return.
      */
     updateVis (year) {
@@ -255,7 +255,7 @@ class Visualisation {
     }
 
     /**
-     * This processes a row of a csv file and creates a correct data item valid for [startVis()]{@link Visualisation#startVis}, assuming that the csv is of the right format.
+     * This processes a row of a csv file and creates a correct data item valid for [startVis()]{@link Visualisation#startVis}, assuming that the csv is of the right format. Normally there's no reason for you to call this yourself - if you have a csv it's better to use [startVisFromCSV()]{@link Visualisation#startVisFromCSV}.
      * @param {Object} d - The row of csv (as an object - easiest to produce via d3.csv). This should contain a property of 'Country Name', 'Country Code' and one for each year within the range you intend to show in the visualisation.
      * @returns {Object} An object representing a valid data item for [startVis()]{@link Visualisation#startVis}. Passing an array of these into [startVis()]{@link Visualisation#startVis} would be a valid parameter for that method.
      */

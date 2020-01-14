@@ -8,7 +8,7 @@ Coursework for Prog1920 with Steven Bradley
 * Documentation can be found in /doc/index.html
 * The example visualisation can be found in index.html
 * The dataset used can be found in popdat.csv
-* The images used for flags are in /img/
+* The images used for flags are in /img
 
 # Using the Example
 
